@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoSort AI | Scanner</title>
+    <style>
+        :root { --highlight: #95ccda; --dark: #000000; --card: #0f0f0f; }
+        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; }
+        nav { width: 100%; padding: 20px; text-align: center; border-bottom: 1px solid rgba(149,204,218,0.2); background: rgba(0,0,0,0.9); }
+        .container { max-width: 600px; width: 90%; margin-top: 30px; background: var(--card); padding: 30px; border-radius: 24px; border: 1px solid rgba(149,204,218,0.1); text-align: center; }
+        .upload-area { border: 2px dashed var(--highlight); padding: 30px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+        .upload-area:hover { background: rgba(149,204,218,0.05); }
+        .btn { background: transparent; color: var(--highlight); border: 1px solid var(--highlight); padding: 12px 30px; border-radius: 50px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 15px; }
+        .btn:hover { background: var(--highlight); color: black; box-shadow: 0 0 15px var(--highlight); }
+        .result-img { width: 100%; border-radius: 12px; margin-top: 20px; border: 2px solid var(--highlight); }
+        #webcam-box { display: none; margin-top: 20px; }
+        .badge { background: var(--highlight); color: black; padding: 5px 15px; border-radius: 20px; font-size: 14px; margin-top: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <nav><span style="font-size: 26px; color: var(--highlight); font-weight: bold;">EcoSort AI</span></nav>
+
+    <div class="container">
+        <h2>Plastic Identification</h2>
+
+        {% if result_image %}
+            <div class="badge">Detected: {{ analysis }}</div>
+            <img src="{{ url_for('static', filename='uploads/' + result_image) }}" class="result-img">
+            <p><a href="/" style="color: var(--highlight); text-decoration: none;">← Scan Another</a></p>
+        {% else %}
+            <form action="/predict" method="post" enctype="multipart/form-data">
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" name="file" id="fileInput" style="display:none" onchange="this.form.submit()">
+                    <p style="color: var(--highlight);">Click to Upload Image</p>
+                </div>
+            </form>
+
+            <button class="btn" id="camBtn" onclick="startWebcam()">Live Camera Analysis</button>
+            
+            <div id="webcam-box">
+                <img id="webcam-feed" src="" style="width:100%; border-radius: 12px;">
+                <button class="btn" onclick="location.reload()">Stop Camera</button>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function startWebcam() {
+            document.getElementById('webcam-box').style.display = 'block';
+            document.getElementById('webcam-feed').setAttribute('src', "{{ url_for('video_feed') }}");
+            document.getElementById('camBtn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
